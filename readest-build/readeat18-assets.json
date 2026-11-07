@@ -1,0 +1,182 @@
+[
+  {
+    "file": "public/readeat/open-book.webp",
+    "sha256": "83e88bf3ffee081cd33e33e0e6dda24213265711fcf2558c6dc9890e71efbb47"
+  },
+  {
+    "file": "public/icon.png",
+    "sha256": "e7611334b881b4533f7e5c6f754aa2ea891214021d40559988c5416314896a57"
+  },
+  {
+    "file": "public/apple-touch-icon.png",
+    "sha256": "0497238bc8f61c77bc2e9166f5e72b700e1e7d99c1559d16f75eb89bffb086af"
+  },
+  {
+    "file": "public/favicon.ico",
+    "sha256": "35aaa3fb1645fe13b3e331eea528fc7fbdb6ddc399d85cb342abbae377d4d9c2"
+  },
+  {
+    "file": "public/readit/brand/icon-192.png",
+    "sha256": "fdc4ba0ae2a9087575f64c8536d2883fd046b997d55a9ffe7f7a0d4fe61bff82"
+  },
+  {
+    "file": "public/readit/brand/icon-256.png",
+    "sha256": "b336b76be26a7065270444960cb2ffd6f4de497862ff9e7449e89254ee3656f6"
+  },
+  {
+    "file": "src-tauri/icons/icon.png",
+    "sha256": "e7611334b881b4533f7e5c6f754aa2ea891214021d40559988c5416314896a57"
+  },
+  {
+    "file": "src-tauri/icons/128x128.png",
+    "sha256": "52f78b35436387cbc5933975ebe26e95e96ceaa691eff1174d77ae245919ce1f"
+  },
+  {
+    "file": "src-tauri/icons/32x32.png",
+    "sha256": "38d456885df31100bde9d9b3828ecc263f1c641af0b4598188a66f086d61aed8"
+  },
+  {
+    "file": "src-tauri/icons/128x128@2x.png",
+    "sha256": "b336b76be26a7065270444960cb2ffd6f4de497862ff9e7449e89254ee3656f6"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+    "sha256": "3ef7896d0320e1fc6fe3338c056d1535bad35c30885bf06af7c4a2cee3bea1e0"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+    "sha256": "3ef7896d0320e1fc6fe3338c056d1535bad35c30885bf06af7c4a2cee3bea1e0"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png",
+    "sha256": "cc7fb72ff883d130f690683667bffc6ea3a326f8716b5fc07426568a8d9e6a5a"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-mdpi/ic_launcher_monochrome.png",
+    "sha256": "2fdf3c33547c922f2caa7c575228854a0eef442c11d411465715edca9d3faa6d"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+    "sha256": "d803c998eb7db22c9c7d7971b56fef7c645fa0f1d3d18d6042c764a9886e42e0"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+    "sha256": "d803c998eb7db22c9c7d7971b56fef7c645fa0f1d3d18d6042c764a9886e42e0"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png",
+    "sha256": "d8623c4b502b47e9408f17634fc065fbc9b3a3d3bdda1c0233480f6b18fc8938"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-hdpi/ic_launcher_monochrome.png",
+    "sha256": "8c054eb683d223d0199d8765b5316785cc692bd6af3cfb670840e301d5ae82f2"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+    "sha256": "6a9d73212b2e66db7a870ac028d6e71ea5a4e41bf40b3a6423a8631b293ac1f4"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+    "sha256": "6a9d73212b2e66db7a870ac028d6e71ea5a4e41bf40b3a6423a8631b293ac1f4"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png",
+    "sha256": "3f0776062b14f9456768b666c63c1807d621b7c05b6e6c54aaa6f211f64caa20"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xhdpi/ic_launcher_monochrome.png",
+    "sha256": "ea41bcd9853474acddc4647c9f55beb6861d8425adbc4532c0318671d10a6c8e"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+    "sha256": "fef717a00c57776db39c3dfef409f0d14f890b3e7fc77e9ade0fe91ab9ad6399"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+    "sha256": "fef717a00c57776db39c3dfef409f0d14f890b3e7fc77e9ade0fe91ab9ad6399"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png",
+    "sha256": "b07199c00e131c9bcb91fcf9315a247221dd293a408f5a5ad5515437c33dbc69"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_monochrome.png",
+    "sha256": "7e8bc5c8d3e5fd81f618f125edecf13d3a6a53c0c34b0282e5c8b5950a7e9770"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+    "sha256": "fdc4ba0ae2a9087575f64c8536d2883fd046b997d55a9ffe7f7a0d4fe61bff82"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
+    "sha256": "fdc4ba0ae2a9087575f64c8536d2883fd046b997d55a9ffe7f7a0d4fe61bff82"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+    "sha256": "11b1e587aa7d0728003a95311c6c8c68b77568d37b2b8ffe237edd579d32527c"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_monochrome.png",
+    "sha256": "86c64352c7eb0390e210898cfe568b26d34fc9a221613f460d165e9f5686d1bb"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/drawable/ic_launcher_background.xml",
+    "sha256": "478ae9d6668158ea739b810eed51dfcaccb585e533701d9ce72d3894825894b5"
+  },
+  {
+    "file": "public/manifest.json",
+    "sha256": "591eab50be34f5aee46be6ee12fcc023a046e9eef31942fe8d4b5721f7c84200"
+  },
+  {
+    "file": "public/readit/help/import-menu.webp",
+    "sha256": "4ec61f2dccc666a510ebe0c99dc48c7c244bf7a4e8dac65a688ee497ed76ae94"
+  },
+  {
+    "file": "public/readit/help/watched-folders.webp",
+    "sha256": "33786dffe6156b91e4336cdf9e77a539312e66954248988a2b678424e8606602"
+  },
+  {
+    "file": "public/readit/help/folder-remove-confirm.webp",
+    "sha256": "4fbbfc6e14695c2f654d422055af31f06480fea50d64529790e0a1de22fa55fc"
+  },
+  {
+    "file": "public/readit/help/font-settings.webp",
+    "sha256": "6b7fc981eaa431a0c60d548a85e783e83669626c6a423d544713646dee1e7b65"
+  },
+  {
+    "file": "public/readit/help/dictionary-providers.webp",
+    "sha256": "62590befc8c257767dad9584fbbd9e69071bc154959e93ced4e2542646e439b6"
+  },
+  {
+    "file": "public/readit/help/translation-languages.webp",
+    "sha256": "3dacb42405e50ef116dae3a129bb0c1b165c8a4f355d9b7479ca3f426c26485d"
+  },
+  {
+    "file": "public/readit/help/turn-sensitivity.webp",
+    "sha256": "6d9c1a333edea390b67dfffbdc885f937da2a923c17aa5ad33e084c9c978c246"
+  },
+  {
+    "file": "public/readit/help/page-sounds.webp",
+    "sha256": "4474eb7074cc11762b1d75291bda85f2ea5c626a3b683d4aa60dec880b3f7a98"
+  },
+  {
+    "file": "public/readit/help/motion-controls.webp",
+    "sha256": "6d9c1a333edea390b67dfffbdc885f937da2a923c17aa5ad33e084c9c978c246"
+  },
+  {
+    "file": "public/readit/help/custom-css.webp",
+    "sha256": "23b4e8574d665822e781dbf69246b054b470eda45ae567326d1f54016fbe0c9c"
+  },
+  {
+    "file": "public/readit/help/tts-settings.webp",
+    "sha256": "5e9bc1d03519416a3b16281cdf4c9df29e068d0d83bb193c7bff539824ec9545"
+  },
+  {
+    "file": "public/readit/help/backup-options.webp",
+    "sha256": "0c8b045329fe30c041aaec91b58ac41018501316039dad51ea9cdc4582493245"
+  },
+  {
+    "file": "public/readit/help/notebook-body.webp",
+    "sha256": "9a5b495df767539c6755d0c8dbc1de49bb9194e8a4e745d1ffaca6d81e1ef10f"
+  }
+]

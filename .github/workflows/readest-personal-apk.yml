@@ -1,0 +1,481 @@
+name: Build Readest Personal APK
+
+# Free-tier friendly: build only when manually requested; never run for each commit.
+# Android APK is signed and automatically published to private GitHub Releases.
+on:
+  workflow_dispatch:
+
+permissions:
+  # Required only for publishing the verified signed APK as a GitHub Release.
+  contents: write
+
+concurrency:
+  group: readest-personal-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-arm64-apk:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    env:
+      NODE_OPTIONS: --max-old-space-size=8192
+      CARGO_BUILD_JOBS: '8'
+      CI: true
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      RUSTFLAGS: '-C debuginfo=0'
+    steps:
+      - name: Recover hosted runner disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/share/powershell /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/lib/android/sdk/system-images || true
+          df -h
+      - name: Checkout personal build recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - name: Checkout official Readest v0.12.16
+        uses: actions/checkout@v4
+        with:
+          repository: readest/readest
+          ref: v0.12.16
+          submodules: recursive
+          path: upstream
+          persist-credentials: false
+      - name: Bundle actual recorded paper sound effects
+        run: bash readest-build/fetch-paper-sounds.sh
+      - name: Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate Personal backup patch syntax
+        run: |
+          node --check readest-build/apply-backup.mjs
+          node --check readest-build/apply-updater.mjs
+          node --check readest-build/apply-shelf-status.mjs
+          node --check readest-build/apply-personal-ai-ux.mjs
+          node --check readest-build/apply-settings-enhancements.mjs
+          node --check readest-build/apply-reader-usability.mjs
+      - name: Verify free-hosted signed release contract
+        run: node readest-build/verify-release-pipeline.mjs
+      - name: pnpm 11.1.1
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.1.1'
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
+      - name: Android NDK
+        run: |
+          sdkmanager 'ndk;28.2.13676358'
+          echo "NDK_HOME=$ANDROID_HOME/ndk/28.2.13676358" >> "$GITHUB_ENV"
+      - name: Rust Android target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+      - name: Install workspace packages
+        working-directory: upstream
+        run: pnpm install --frozen-lockfile
+      - name: Prepare PDF vendor assets
+        working-directory: upstream
+        run: pnpm --filter @readest/readest-app setup-vendors
+      - name: Apply Readest Personal changes
+        run: |
+          node readest-build/apply-personal.mjs upstream
+          node readest-build/apply-annotation-tags.mjs upstream
+          node readest-build/apply-formats.mjs upstream
+          node readest-build/apply-next.mjs upstream
+          node readest-build/apply-backup.mjs upstream
+          node readest-build/apply-updater.mjs upstream
+          node readest-build/apply-shelf-status.mjs upstream
+          node readest-build/apply-personal-ai-ux.mjs upstream
+          node readest-build/apply-settings-enhancements.mjs upstream
+          node readest-build/apply-reader-usability.mjs upstream
+      - name: Apply EPUB repair and touch book ordering
+        run: node readest-build/apply-reader-library-fixes.mjs upstream
+      - name: Apply gallery drag and watched folder management
+        run: node readest-build/apply-gallery-folder-fixes.mjs upstream
+      - name: Show manual order handles only while editing
+        run: node readest-build/apply-order-editing.mjs upstream
+      - name: Apply reading vault and verified interaction fixes
+        run: |
+          node readest-build/apply-personal-reading-vault.mjs upstream
+          node readest-build/apply-reading-interactions.mjs upstream
+          node readest-build/apply-readit.mjs upstream
+          node readest-build/apply-readit17.mjs upstream
+          node readest-build/apply-readeat18.mjs upstream
+          node readest-build/apply-readeat19.mjs upstream
+          node readest-build/apply-readeat20.mjs upstream
+      - name: Install updated locked dependencies
+        working-directory: upstream
+        run: pnpm install --frozen-lockfile
+      - name: Test vault, explicit page commits and selective ZIP restore
+        working-directory: upstream/apps/readest-app
+        env:
+          SUPABASE_URL: https://example.supabase.co
+          SUPABASE_ANON_KEY: dummy-key-for-offline-tests
+        run: pnpm exec vitest run src/__tests__/personalReadingVault.test.ts src/__tests__/personalLayoutBackup.test.ts src/__tests__/personalRestoreIsolation.test.ts src/__tests__/personalZipRestore.test.ts src/__tests__/personalInteraction.test.ts src/__tests__/personalManualTurn.test.ts src/__tests__/personalDictionaryButton.test.tsx
+      - name: Verify Personal audio, AI and server profile integration
+        run: node readest-build/verify-personal-profile.mjs upstream
+      - name: Verify native in-app updater compatibility
+        run: node readest-build/verify-personal-updater.mjs upstream
+      - name: Verify Android book import picker patch
+        run: node readest-build/verify-import-pickers.mjs upstream
+      - name: Verify always-visible reading status shelf
+        run: node readest-build/verify-shelf-filter.mjs upstream
+      - name: Verify source-page PDF reading flow
+        run: node readest-build/verify-pdf-reflow.mjs upstream
+      - name: Verify PDF usability, help and photo crop integration
+        run: node readest-build/verify-reader-usability.mjs upstream
+      - name: Unit test customizable controls
+        working-directory: upstream/apps/readest-app
+        env:
+          SUPABASE_URL: https://example.supabase.co
+          SUPABASE_ANON_KEY: dummy-key-for-offline-tests
+        run: pnpm exec vitest run src/__tests__/personalBookOrder.test.tsx src/__tests__/personalOrderEditing.test.tsx src/__tests__/personalWatchedFolders.test.tsx src/__tests__/hooks/useAutoImportFolders.test.tsx src/__tests__/app/library/import-from-folder-watched.test.tsx src/__tests__/app/library/import-from-folder-read-in-place.test.tsx src/__tests__/services/auto-import-folder-groups.test.ts src/__tests__/personalEPUBRepair.test.ts src/__tests__/libs/document.test.ts src/__tests__/personalBackgroundCrop.test.ts src/__tests__/personalControls.test.ts src/__tests__/personalAnnotationTags.test.ts src/__tests__/personalFormatImport.test.ts src/__tests__/personalPDFText.test.ts src/__tests__/personalI18n.test.ts src/__tests__/personalBackup.test.ts src/__tests__/personalShelfStatuses.test.ts src/__tests__/personalAIQuick.test.ts src/__tests__/personalAudioProfile.test.ts
+      - name: Verify upstream handwriting and quote-card regressions
+        working-directory: upstream/apps/readest-app
+        env:
+          SUPABASE_URL: https://example.supabase.co
+          SUPABASE_ANON_KEY: dummy-key-for-offline-tests
+        run: pnpm exec vitest run src/__tests__/app/reader/components/handwriting/HandwritingOverlay.test.tsx src/__tests__/app/reader/components/QuoteCardDialog.test.tsx src/__tests__/services/handwriting/handwritingService.test.ts src/__tests__/utils/quoteCard.test.ts
+      - name: Check Personal controls TypeScript
+        working-directory: upstream/apps/readest-app
+        run: pnpm exec tsc --noEmit
+      - name: Require persistent signing identity
+        env:
+          READEST_KEYSTORE_B64: ${{ secrets.READEST_ANDROID_KEYSTORE_B64 }}
+          READEST_KEYSTORE_PASSWORD: ${{ secrets.READEST_ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$READEST_KEYSTORE_B64" || -z "$READEST_KEYSTORE_PASSWORD" ]]; then
+            echo '::error::Missing permanent Android signing key. Read readest-build/ANDROID_UPDATES_KO.md and register two repository Secrets.'
+            exit 1
+          fi
+          if [[ ${#READEST_KEYSTORE_PASSWORD} -lt 6 ]]; then
+            echo '::error::Signing password must be at least 6 characters'
+            exit 1
+          fi
+          echo "READEST_PERSONAL_VERSION_CODE=$((1800020 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
+      - name: Save official native Android sources before project initialization
+        run: |
+          set -euo pipefail
+          app=upstream/apps/readest-app/src-tauri/gen/android/app
+          test -f "$app/src/main/java/com/bilingify/readest/MainActivity.kt"
+          test -f "$app/src/main/AndroidManifest.xml"
+          test -f "$app/build.gradle.kts"
+          mkdir -p "$RUNNER_TEMP/readest-native"
+          cp -a "$app/src/main" "$RUNNER_TEMP/readest-native/main"
+          cp "$app/build.gradle.kts" "$RUNNER_TEMP/readest-native/build.gradle.kts"
+      - name: Initialize Gradle/Tauri scaffold
+        working-directory: upstream/apps/readest-app
+        run: |
+          rm -rf src-tauri/gen/android
+          pnpm tauri android init
+          echo 'Generated Gradle root:'
+          ls -la src-tauri/gen/android
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('src-tauri/gen/android')
+          for stem in ('settings.gradle', 'build.gradle'):
+              found = [p for p in (root / stem, root / (stem + '.kts')) if p.is_file()]
+              if not found:
+                  raise SystemExit(f'Missing generated {stem} or {stem}.kts; present: {[p.name for p in root.iterdir()]}')
+              print('Verified generated Gradle file:', found[0])
+          PY
+      - name: Restore official Readest Android functionality and set personal package
+        run: |
+          set -euo pipefail
+          app=upstream/apps/readest-app/src-tauri/gen/android/app
+          # Tauri does not guarantee an adaptive-icon XML in its scaffold.
+          # Restore the original native project, then fix the icon's resource
+          # reference using the checked-in drawable, instead of guessing
+          # what resources the generated scaffold will contain.
+          cp -a "$RUNNER_TEMP/readest-native/main/." "$app/src/main/"
+          cp "$RUNNER_TEMP/readest-native/build.gradle.kts" "$app/build.gradle.kts"
+          echo "Original Readest manifest, resources and MainActivity copied"
+          python3 - <<'PY'
+          from pathlib import Path
+          base = Path('upstream/apps/readest-app/src-tauri/gen/android/app')
+          icon = base / 'src/main/res/mipmap-anydpi-v26/ic_launcher.xml'
+          background = base / 'src/main/res/drawable/ic_launcher_background.xml'
+          if not icon.is_file() or not background.is_file():
+              raise SystemExit('Original icon or background resource missing after restore')
+          icon_xml = icon.read_text()
+          expected = '@color/ic_launcher_background'
+          if expected not in icon_xml:
+              raise SystemExit('Unexpected source launcher icon; inspect Android resources')
+          icon.write_text(icon_xml.replace(expected, '@drawable/ic_launcher_background'))
+          print('Patched adaptive icon to use existing drawable background')
+          old = 'com.bilingify.readest'
+          new = 'com.fixitneo.readestpersonal'
+          src = base / 'src/main/java/com/bilingify/readest/MainActivity.kt'
+          dst = base / 'src/main/java/com/fixitneo/readestpersonal/MainActivity.kt'
+          if not src.is_file():
+              raise SystemExit('Original Readest MainActivity missing: refusing to build a nonfunctional picker')
+          code = src.read_text()
+          if 'NativeBridgePlugin.deliverActivityResult(requestCode, resultCode, data)' not in code:
+              raise SystemExit('Native file-picker result delivery is missing')
+          if code.count('package ' + old) != 1:
+              raise SystemExit('Unexpected original MainActivity package')
+          dst.parent.mkdir(parents=True, exist_ok=True)
+          dst.write_text(code.replace('package ' + old, 'package ' + new, 1))
+          src.unlink()
+          gradle = base / 'build.gradle.kts'
+          code = gradle.read_text()
+          for property in ['namespace', 'applicationId']:
+              before = property + ' = "' + old + '"'
+              after = property + ' = "' + new + '"'
+              if code.count(before) != 1:
+                  raise SystemExit('Unexpected Android Gradle ' + property)
+              code = code.replace(before, after, 1)
+          if 'missingDimensionStrategy("store", storeFlavor)' not in code:
+              raise SystemExit('Original open-source store variant config missing')
+          # Preserve a monotonic Android upgrade path even when the upstream
+          # Tauri app still reports 0.12.16. Never depend on regenerated defaults.
+          version_before = 'versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()'
+          version_after = 'versionCode = System.getenv("READEST_PERSONAL_VERSION_CODE").toInt()'
+          if code.count(version_before) != 1:
+              raise SystemExit('Unexpected original Android versionCode configuration')
+          code = code.replace(version_before, version_after)
+          name_before = 'versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")'
+          if code.count(name_before) != 1:
+              raise SystemExit('Unexpected original Android versionName configuration')
+          code = code.replace(name_before, 'versionName = "0.12.20-personal." + System.getenv("GITHUB_RUN_NUMBER")')
+          gradle.write_text(code)
+          # Readest's manifest references a FileProvider paths XML that is
+          # absent from the upstream tracked Android files in v0.12.16.
+          # Keep Tauri's generated definition when present; otherwise create
+          # a deliberately scoped one, without exposing all external storage.
+          paths_xml = base / 'src/main/res/xml/file_paths.xml'
+          if not paths_xml.exists():
+              paths_xml.parent.mkdir(parents=True, exist_ok=True)
+              paths_xml.write_text(
+                  '<?xml version="1.0" encoding="utf-8"?>\n'
+                  '<paths xmlns:android="http://schemas.android.com/apk/res/android">\n'
+                  '  <files-path name="private_files" path="." />\n'
+                  '  <cache-path name="private_cache" path="." />\n'
+                  '  <external-files-path name="external_app_files" path="." />\n'
+                  '  <external-cache-path name="external_app_cache" path="." />\n'
+                  '</paths>\n'
+              )
+          manifest = base / 'src/main/AndroidManifest.xml'
+          xml = manifest.read_text()
+          if '<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>' not in xml:
+              raise SystemExit('MANAGE_EXTERNAL_STORAGE permission missing from source manifest')
+          if 'android:name=".MainActivity"' not in xml:
+              raise SystemExit('Expected relative MainActivity reference in manifest')
+          if 'android:authorities="${applicationId}.fileprovider"' not in xml:
+              raise SystemExit('Unique FileProvider authority placeholder missing')
+          scaffold = base.parent
+          for stem in ('settings.gradle', 'build.gradle'):
+              matches = [p for p in (scaffold / stem, scaffold / (stem + '.kts')) if p.is_file()]
+              if not matches:
+                  raise SystemExit('Missing generated Gradle scaffold file: ' + stem)
+              print('Verified Gradle scaffold:', matches[0])
+          print('Original MainActivity, picker, manifest, permissions and resources restored onto complete Gradle scaffold')
+          PY
+      - name: Install transparent Personal bookstack launcher icon
+        run: |
+          # Restore the exact GitHub-hosted Ubuntu 22.04 path used by successful build #223.
+          python3 -m pip install --user 'Pillow>=10,<13'
+          python3 readest-build/install-personal-icon.py upstream
+          python3 readest-build/verify-personal-icon.py upstream
+      - name: Install the permanent Android signing key
+        env:
+          READEST_KEYSTORE_B64: ${{ secrets.READEST_ANDROID_KEYSTORE_B64 }}
+          READEST_KEYSTORE_PASSWORD: ${{ secrets.READEST_ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          keyfile="$RUNNER_TEMP/readest-personal.jks"
+          # Never print the keystore or password; the Actions secret is decoded only in memory/on runner disk.
+          printf '%s' "$READEST_KEYSTORE_B64" | base64 --decode > "$keyfile"
+          chmod 600 "$keyfile"
+          keytool -list -keystore "$keyfile" -storepass "$READEST_KEYSTORE_PASSWORD" -alias readestpersonal >/dev/null
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          root = Path('upstream/apps/readest-app/src-tauri/gen/android')
+          path = root / 'keystore.properties'
+          # Java Properties.load(InputStream) uses Latin-1 with backslash escapes.
+          # Preserve strong passwords with punctuation or Unicode.
+          def escape_value(value):
+              parts = []
+              for ch in value:
+                  if ch in '\\:= #!':
+                      parts.append('\\' + ch)
+                  elif ord(ch) < 32 or ord(ch) > 126:
+                      utf16 = ch.encode('utf-16-be')
+                      parts.extend('\\u%04X' % int.from_bytes(utf16[i:i+2], 'big')
+                                   for i in range(0, len(utf16), 2))
+                  else:
+                      parts.append(ch)
+              return ''.join(parts)
+          path.write_text(
+              'storeFile=' + escape_value(os.environ['RUNNER_TEMP'] + '/readest-personal.jks') + '\n'
+              + 'password=' + escape_value(os.environ['READEST_KEYSTORE_PASSWORD']) + '\n'
+              + 'keyAlias=readestpersonal\n'
+          )
+          path.chmod(0o600)
+          print('Stable Android signing identity prepared; private key not logged')
+          PY
+      - name: Verify persistent signing identity and incrementing version
+        run: |
+          set -euo pipefail
+          node readest-build/apply-readit17-assets.mjs upstream --native
+          node readest-build/apply-readeat18-assets.mjs upstream --native
+          node readest-build/apply-readeat20.mjs upstream --native
+          test -s upstream/apps/readest-app/src-tauri/gen/android/keystore.properties
+          test -s "$RUNNER_TEMP/readest-personal.jks"
+          grep -Fq 'versionCode = System.getenv("READEST_PERSONAL_VERSION_CODE").toInt()' upstream/apps/readest-app/src-tauri/gen/android/app/build.gradle.kts
+          test "$READEST_PERSONAL_VERSION_CODE" -gt 1000000
+      - name: Verify native file-picker integration before build
+        run: |
+          set -euo pipefail
+          test -f upstream/apps/readest-app/src-tauri/gen/android/app/src/main/java/com/fixitneo/readestpersonal/MainActivity.kt
+          grep -q 'NativeBridgePlugin.deliverActivityResult' upstream/apps/readest-app/src-tauri/gen/android/app/src/main/java/com/fixitneo/readestpersonal/MainActivity.kt
+          grep -q 'MANAGE_EXTERNAL_STORAGE' upstream/apps/readest-app/src-tauri/gen/android/app/src/main/AndroidManifest.xml
+          test -f upstream/apps/readest-app/src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+          if grep -q '@color/ic_launcher_background' upstream/apps/readest-app/src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml; then
+            test -f upstream/apps/readest-app/src-tauri/gen/android/app/src/main/res/values/colors.xml || {
+              echo "::error::Launcher XML references missing color resource"
+              exit 1
+            }
+          fi
+          grep -q 'startActivityForResult(intent, FILE_PICKER_REQUEST_CODE)' upstream/apps/readest-app/src-tauri/plugins/tauri-plugin-native-bridge/android/src/main/java/NativeBridgePlugin.kt
+          grep -q 'applicationId = "com.fixitneo.readestpersonal"' upstream/apps/readest-app/src-tauri/gen/android/app/build.gradle.kts
+      # Do not invoke Gradle here: Tauri generates tauri.settings.gradle and
+      # tauri.build.gradle.kts during 'tauri android build', not 'tauri android init'.
+      # Static manifest/asset/file-picker checks above run before Rust compilation.
+      # Debug configuration uses the same private signing identity via Gradle signingConfigs.
+      # Never publish an ephemeral self-signed Android debug APK.
+      - name: Use extracted native libraries for install compatibility
+        run: node readest-build/apply-install-compatibility.mjs upstream
+      - name: Build arm64 debug APK with persistent personal signature
+        working-directory: upstream/apps/readest-app
+        run: pnpm tauri android build -t aarch64 --apk --debug --ci
+      - name: Verify app identifier and collect APK
+        shell: bash
+        env:
+          READEST_KEYSTORE_PASSWORD: ${{ secrets.READEST_ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          mapfile -t found < <(find upstream/apps/readest-app/src-tauri/gen/android/app/build/outputs/apk -type f -name '*debug*.apk' | sort)
+          if [ "${#found[@]}" -ne 1 ]; then
+            echo "Expected exactly one debug APK but found ${#found[@]}"
+            printf '%s\n' "${found[@]:-}"
+            exit 1
+          fi
+          btools=$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n1)
+          # Tauri/AGP may fall back to a generated debug signingConfig even
+          # when Gradle sees our private keystore. Always re-sign the *final*
+          # APK using the immutable personal certificate; apksigner verifies
+          # that the resulting Android signature is valid. Never publish the
+          # intermediate debug-signed file.
+          "$btools/apksigner" sign \
+            --ks "$RUNNER_TEMP/readest-personal.jks" \
+            --ks-key-alias readestpersonal \
+            --ks-pass env:READEST_KEYSTORE_PASSWORD \
+            --key-pass env:READEST_KEYSTORE_PASSWORD \
+            --out "dist/ReadEat_0.12.16_update_${GITHUB_RUN_NUMBER}_arm64.apk" \
+            "${found[0]}"
+          "$btools/apksigner" verify --verbose --print-certs dist/*.apk > dist/signing-info.txt
+          # Compare against the real certificate from successful personal APK #223.
+          # A newly-generated/rotated JKS cannot silently overwrite users' data.
+          expected_cert="$(tr -d '[:space:]' < readest-build/ANDROID_SIGNER_CERT_SHA256)"
+          if [[ ! "$expected_cert" =~ ^[0-9a-f]{64}$ ]]; then
+            echo "::error::Missing/invalid pinned signing certificate fingerprint"
+            exit 1
+          fi
+          grep -Fxq 'Number of signers: 1' dist/signing-info.txt || {
+            echo "::error::Unexpected multiple APK signers"
+            exit 1
+          }
+          grep -Fqi "certificate SHA-256 digest: $expected_cert" dist/signing-info.txt || {
+            echo "::error::APK signing certificate differs from previously installed Readest Personal #223. Refusing to publish!"
+            exit 1
+          }
+          echo 'Verified: APK signer matches trusted personal release #223.'
+          "$btools/aapt" dump badging dist/*.apk > dist/package-info.txt
+          grep "name='com.fixitneo.readestpersonal'" dist/package-info.txt
+          grep -F "versionCode='$READEST_PERSONAL_VERSION_CODE'" dist/package-info.txt
+          # apksigner sign above uses --ks and --ks-key-alias explicitly.
+          # apksigner verify validates the final APK signature against its
+          # embedded certificate. Do not parse stdout's version-dependent
+          # certificate formatting or compare a converted fingerprint.
+          printf 'Permanent signing key applied to final APK; Android signature verified.\n'
+          unzip -Z1 dist/*.apk | grep -q '^lib/arm64-v8a/'
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReadestPersonal-Android-Update-arm64
+          path: dist/
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Automatically publish verified signed APK to GitHub Releases
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          apks=(dist/ReadEat_0.12.16_update_*_arm64.apk)
+          if [ "${#apks[@]}" -ne 1 ]; then
+            echo '::error::Expected one verified and signed APK'
+            exit 1
+          fi
+          apk="${apks[0]}"
+          tag="readest-personal-apk-v0.12.16.${GITHUB_RUN_NUMBER}"
+          source_sha="$(git rev-parse HEAD)"
+          # Fail closed: never silently replace an existing signed release asset.
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::error::Release tag $tag already exists; refusing to overwrite a signed update."
+            exit 1
+          fi
+          cat > dist/RELEASE_NOTES.md <<EOF
+          ## Readest Personal Android APK
+
+          - App ID: \`com.fixitneo.readestpersonal\`
+          - Version: \`0.12.20-personal.${GITHUB_RUN_NUMBER}\`
+          - Android versionCode: \`${READEST_PERSONAL_VERSION_CODE}\`
+          - Architecture: arm64-v8a
+          - Source branch: \`readest-personal-v0.12.16\`
+          - Source commit: \`${source_sha}\`
+          - Build: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+
+          ### Install without uninstalling
+
+          Download the **.apk** file below directly to Android and open it with
+          the Android package installer. Approve **Update** (or Install).
+          The installed app must have **the same package ID and signing certificate**,
+          and the new versionCode must be higher. Never uninstall the existing app
+          to solve a signature mismatch: back up your app data first.
+
+          The APK uses the existing permanent GitHub Actions signing key.
+          See \`SHA256SUMS.txt\` and \`signing-info.txt\` for verification.
+          EOF
+          gh release create "$tag" \
+            "$apk" \
+            dist/SHA256SUMS.txt \
+            dist/signing-info.txt \
+            dist/package-info.txt \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$source_sha" \
+            --title "ReadEat Android v0.12.16 · build ${GITHUB_RUN_NUMBER}" \
+            --notes-file dist/RELEASE_NOTES.md \
+            --latest
+          {
+            echo '## Readest Personal — signed APK published'
+            echo "- [Download APK from GitHub Releases](https://github.com/${GITHUB_REPOSITORY}/releases/tag/${tag})"
+            echo "- Android package: \`com.fixitneo.readestpersonal\`"
+            echo "- versionCode: \`${READEST_PERSONAL_VERSION_CODE}\`"
+            echo '- Installation: download APK, open with Android, approve update; do not uninstall.'
+          } >> "$GITHUB_STEP_SUMMARY"

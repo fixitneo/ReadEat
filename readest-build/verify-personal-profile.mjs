@@ -1,0 +1,48 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+const root=path.resolve(process.argv[2]??'upstream','apps/readest-app');
+const src=p=>fs.readFileSync(path.join(root,'src',p),'utf8');
+const dialog=src('components/settings/SettingsDialog.tsx');
+const tabs=dialog.slice(dialog.indexOf('  const tabConfig = ['),dialog.indexOf('  ] as TabConfig[]'));
+const c=tabs.indexOf("tab: 'Custom'");
+const ai=tabs.indexOf("tab: 'AI'");
+const backup=tabs.indexOf("tab: 'Backup'");
+assert.ok(c>=0&&ai>c&&backup>ai,'AI tab must appear between Custom and Backup');
+assert.ok(!/NODE_ENV === 'production'/.test(tabs),'AI tab cannot be hidden in release mode');
+assert.match(dialog,/addEventListener\('touchstart',\s*onStart/);
+assert.match(dialog,/Math\.abs\(dx\)\s*<\s*68/);
+assert.match(src('types/settings.ts'),/personalProfile\?:/);
+assert.match(src('services/sync/adapters/settings.ts'),/'personalProfile'/);
+assert.match(src('utils/settingsSync.ts'),/personalProfile: payload\.personalProfile/);
+assert.match(src('utils/settingsSync.ts'),/personalProfile: settings\.personalProfile/);
+assert.match(src('components/settings/AIPanel.tsx'),/<PersonalAIPromptSettings/);
+assert.match(src('components/settings/PersonalAIPromptSettings.tsx'),/personalProfile/);
+assert.match(src('components/PersonalAskAIDialog.tsx'),/personalProfile/);
+const preview=src('components/settings/PersonalPageTurnSound.tsx');
+assert.match(preview,/export \* from '@\/app\/reader\/components\/PersonalPageTurnSound'/);
+const sound=src('app/reader/components/PersonalPageTurnSound.tsx').replace(/\s/g,'');
+assert.match(sound,/playPageEffect\(assetSource\(effective\),clamp\(effective\.volume\)\/100\)/);
+assert.doesNotMatch(sound,/newAudio\(/);
+const transport=src('services/pageEffectAudio.ts');
+assert.match(transport,/page_effect_audio/);
+const native=fs.readFileSync(path.join(root,'src-tauri/plugins/tauri-plugin-native-bridge/android/src/main/java/NativeBridgePlugin.kt'),'utf8');
+const effect=native.slice(native.indexOf('private fun getPageEffectPool'),native.indexOf('override fun onDestroy'));
+assert.match(effect,/USAGE_ASSISTANCE_SONIFICATION/);
+assert.doesNotMatch(effect,/requestAudioFocus|setStreamVolume/);
+assert.doesNotMatch(sound,/createOscillator|createGain|exponentialRampToValueAtTime/);
+assert.match(sound,/personalProfile:.*pageSounds:checked/);
+assert.match(sound,/pageSoundPosition\(/);
+assert.match(sound,/shouldSoundPageTurn\(/);
+assert.match(sound,/view\.addEventListener\(PERSONAL_PAGE_COMMIT/);
+assert.match(sound,/document\.visibilityState==='visible'/);
+assert.match(sound,/ttsSessionManager\.getPlaybackState\(\)/);
+for(const name of ['paper','book','soft']){
+ const audio=path.join(root,'public','personal-sounds',name+'.mp3');
+ const data=fs.readFileSync(audio);
+ assert.ok(data.byteLength>1500,'Real bundled audio missing: '+name);
+}
+assert.match(src('utils/personalBackupSelection.ts'),/readit-personal-ai-templates-v1/);
+assert.match(src('utils/personalBackupSelection.ts'),/readit-personal-page-sounds-v1/);
+console.log('Verified: prod AI tab, swipe, recorded sounds, volume, saved templates and cloud replica/backup.');

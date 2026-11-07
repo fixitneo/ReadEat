@@ -1,0 +1,26 @@
+{
+  "name": "rEadiT",
+  "short_name": "rEadiT",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F3E9D8",
+  "description": "내 책과 읽기 기록을 보관하는 개인 독서 공간",
+  "icons": [
+    {
+      "src": "/readit/brand/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/readit/brand/icon-256.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "/icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "splash_pages": null
+}

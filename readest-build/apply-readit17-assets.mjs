@@ -1,0 +1,4 @@
+import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
+const root=path.resolve(process.argv[2]??'.');const app=path.join(root,'apps/readest-app');
+const entries=JSON.parse(fs.readFileSync(new URL('./readit17-assets.json',import.meta.url),'utf8'));
+for(const entry of entries){if(entry.file.startsWith('src-tauri/gen/')&&!process.argv.includes('--native'))continue;if(entry.file.startsWith('src-tauri/gen/')&&!process.argv.includes('--native'))continue;if(entry.file.includes('..')||path.isAbsolute(entry.file))throw Error('Invalid asset path');const data=fs.readFileSync(new URL('./readit17-assets/'+entry.file,import.meta.url));if(crypto.createHash('sha256').update(data).digest('hex')!==entry.sha256)throw Error('Asset checksum mismatch '+entry.file);const target=path.join(app,entry.file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,data);}console.log('Applied rEadiT17 assets',entries.length);

@@ -1,0 +1,120 @@
+    // Readest Personal manual APK update. Only accepts same package, same signing
+    // certificate and a strictly newer Android versionCode. Never uninstalls.
+    @Suppress("DEPRECATION")
+    @Command
+    fun install_package(invoke: Invoke) {
+        val args = invoke.parseArgs(InstallPackageRequestArgs::class.java)
+        pluginScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                val out = JSObject()
+                var staged: File? = null
+                try {
+                    val supplied = args.path?.trim().orEmpty()
+                    require(supplied.isNotEmpty()) { "Select an APK file first." }
+                    require(!supplied.startsWith("http://") && !supplied.startsWith("https://")) {
+                        "Only local APK files may be installed."
+                    }
+                    // Android's picker returns content:// with no real file path.
+                    val dir = File(activity.cacheDir, "readest-personal-apk-update")
+                    require(dir.isDirectory || dir.mkdirs()) { "Cannot prepare the update cache." }
+                    val now = System.currentTimeMillis()
+                    dir.listFiles()?.forEach { f ->
+                        if (f.isFile && now - f.lastModified() > 172800000L) f.delete()
+                    }
+                    val apk = File.createTempFile("readest-update-", ".apk", dir)
+                    staged = apk
+                    val input = if (supplied.startsWith("content://")) {
+                        activity.contentResolver.openInputStream(Uri.parse(supplied))
+                            ?: throw IOException("Cannot read the selected Android document.")
+                    } else {
+                        val uri = Uri.parse(supplied)
+                        val file = if (uri.scheme == "file") File(uri.path ?: "")
+                                   else if (uri.scheme == null) File(supplied)
+                                   else throw IllegalArgumentException("Unsupported APK URI scheme.")
+                        FileInputStream(file)
+                    }
+                    input.use { stream ->
+                        apk.outputStream().use { output ->
+                            val buffer = ByteArray(65536)
+                            var total = 0L
+                            val maxBytes = 700L * 1024L * 1024L
+                            while (true) {
+                                val length = stream.read(buffer)
+                                if (length < 0) break
+                                total += length
+                                require(total <= maxBytes) { "APK is too large (700 MB limit)." }
+                                output.write(buffer, 0, length)
+                            }
+                            require(total > 0) { "The selected APK is empty." }
+                        }
+                    }
+                    val pm = activity.packageManager
+                    val certFlags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                        PackageManager.GET_SIGNING_CERTIFICATES else PackageManager.GET_SIGNATURES
+                    val archive = pm.getPackageArchiveInfo(apk.absolutePath, certFlags)
+                        ?: throw IllegalArgumentException("Not a valid Android APK.")
+                    require(archive.packageName == activity.packageName) {
+                        "This APK is for a different application (${archive.packageName})."
+                    }
+                    val installed = pm.getPackageInfo(activity.packageName, certFlags)
+                    val currentVersion = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                        installed.longVersionCode else installed.versionCode.toLong()
+                    val nextVersion = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                        archive.longVersionCode else archive.versionCode.toLong()
+                    require(nextVersion > currentVersion) {
+                        "The selected APK is not newer. Installed: $currentVersion, selected: $nextVersion."
+                    }
+                    fun certDigests(info: android.content.pm.PackageInfo): Set<String> {
+                        val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                            info.signingInfo?.apkContentsSigners?.toList() ?: emptyList()
+                        else info.signatures?.toList() ?: emptyList()
+                        return signatures.map { sig ->
+                            java.security.MessageDigest.getInstance("SHA-256")
+                                .digest(sig.toByteArray())
+                                .joinToString("") { b -> "%02x".format(b.toInt() and 0xff) }
+                        }.toSet()
+                    }
+                    val existingCerts = certDigests(installed)
+                    val newCerts = certDigests(archive)
+                    require(existingCerts.isNotEmpty() && existingCerts == newCerts) {
+                        "APK signing key differs from the installed app. Android cannot preserve data across this signature change. Do not uninstall your current app."
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                        !pm.canRequestPackageInstalls()) {
+                        staged?.delete()
+                        staged = null
+                        withContext(Dispatchers.Main) {
+                            val permissionIntent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                                Uri.parse("package:${activity.packageName}"))
+                            activity.startActivity(permissionIntent)
+                        }
+                        out.put("success", false)
+                        out.put("permissionRequired", true)
+                        out.put("error", "Allow APK installation for Readest Personal in Android Settings, then return and choose the APK again.")
+                        return@withContext out
+                    }
+                    val uri = FileProvider.getUriForFile(
+                        activity, "${activity.packageName}.fileprovider", apk)
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        setDataAndType(uri, "application/vnd.android.package-archive")
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    withContext(Dispatchers.Main) {
+                        activity.startActivity(intent)
+                    }
+                    // Keep staged file until Package Installer finishes reading.
+                    staged = null
+                    out.put("success", true)
+                    out.put("versionCode", nextVersion)
+                    out.put("message", "Android installation confirmation opened.")
+                } catch (error: Exception) {
+                    staged?.delete()
+                    out.put("success", false)
+                    out.put("error", error.message ?: "Could not open APK installer.")
+                }
+                out
+            }
+            if (isActive) invoke.resolve(result)
+        }
+    }
+

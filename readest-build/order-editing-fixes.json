@@ -1,0 +1,27 @@
+[
+  {
+    "path": "src/app/library/components/Bookshelf.tsx",
+    "before": "  const renderBookshelfItem = useCallback(\n    (item: Book | BooksGroup, mode: LibraryViewModeType, shelf: BookshelfDefinition) => (\n      <PersonalSortableBook id={personalSortKey(item)} scope={personalSortScope(shelf.id,groupId)}\n        enabled={manualOrderEnabled}\n        selectedIds={(sections.find(section=>section.definition.id===shelf.id)?.items??[])\n          .filter(entry=>'hash' in entry?selectedBookSet.has(entry.hash):selectedBookSet.has(entry.id)||entry.books.every(book=>selectedBookSet.has(book.hash)))\n          .map(personalSortKey)}\n",
+    "after": "  const renderBookshelfItem = useCallback(\n    (item: Book | BooksGroup, mode: LibraryViewModeType, shelf: BookshelfDefinition) => (\n      <PersonalSortableBook id={personalSortKey(item)} scope={personalSortScope(shelf.id,groupId)}\n        enabled={manualOrderEnabled} editing={isSelectMode}\n        selectedIds={(sections.find(section=>section.definition.id===shelf.id)?.items??[])\n          .filter(entry=>'hash' in entry?selectedBookSet.has(entry.hash):selectedBookSet.has(entry.id)||entry.books.every(book=>selectedBookSet.has(book.hash)))\n          .map(personalSortKey)}\n"
+  },
+  {
+    "path": "src/app/library/components/Bookshelf.tsx",
+    "before": "      {!showGroupingModal && !tagBookHashes && isSelectMode && showSelectModeActions && (\n        <SelectModeActions\n          selectedBooks={selectedBooks}\n          safeAreaBottom={safeAreaInsets?.bottom || 0}\n          onHeightChange={setSelectModeActionsHeight}\n          // Native send targets: iOS, Android, macOS — route through\n",
+    "after": "      {!showGroupingModal && !tagBookHashes && isSelectMode && showSelectModeActions && (\n        <SelectModeActions\n          selectedBooks={selectedBooks}\n          isReordering={manualOrderEnabled}\n          safeAreaBottom={safeAreaInsets?.bottom || 0}\n          onHeightChange={setSelectModeActionsHeight}\n          // Native send targets: iOS, Android, macOS — route through\n"
+  },
+  {
+    "path": "src/app/library/components/SelectModeActions.tsx",
+    "before": "\ninterface SelectModeActionsProps {\n  selectedBooks: string[];\n  safeAreaBottom: number;\n  // When false (Linux desktop, Windows desktop, web) the Send button is\n  // hidden entirely — those platforms can't surface a system share sheet\n",
+    "after": "\ninterface SelectModeActionsProps {\n  selectedBooks: string[];\n  isReordering?: boolean;\n  safeAreaBottom: number;\n  // When false (Linux desktop, Windows desktop, web) the Send button is\n  // hidden entirely — those platforms can't surface a system share sheet\n"
+  },
+  {
+    "path": "src/app/library/components/SelectModeActions.tsx",
+    "before": "\nconst SelectModeActions: React.FC<SelectModeActionsProps> = ({\n  selectedBooks,\n  safeAreaBottom,\n  sendEnabled = true,\n  canDownload = false,\n",
+    "after": "\nconst SelectModeActions: React.FC<SelectModeActionsProps> = ({\n  selectedBooks,\n  isReordering = false,\n  safeAreaBottom,\n  sendEnabled = true,\n  canDownload = false,\n"
+  },
+  {
+    "path": "src/app/library/components/SelectModeActions.tsx",
+    "before": "          <div className='text-red-500'>{_('Delete')}</div>\n        </button>\n        <button onClick={onCancel} className='flex flex-col items-center justify-center gap-1'>\n          <MdOutlineCancel />\n          <div>{_('Cancel')}</div>\n        </button>\n      </div>\n    </div>\n",
+    "after": "          <div className='text-red-500'>{_('Delete')}</div>\n        </button>\n        <button onClick={onCancel} className='flex flex-col items-center justify-center gap-1'>\n          {isReordering ? <MdCheckCircleOutline /> : <MdOutlineCancel />}\n          <div>{isReordering ? '완료' : _('Cancel')}</div>\n        </button>\n      </div>\n    </div>\n"
+  }
+]

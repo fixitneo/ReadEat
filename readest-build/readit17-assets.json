@@ -1,0 +1,278 @@
+[
+  {
+    "file": "public/apple-touch-icon.png",
+    "sha256": "9947b390efedca55761b152837938757f5a1ed48e1ea045020f24577e155b480"
+  },
+  {
+    "file": "public/favicon.ico",
+    "sha256": "2da6027d66d604d18407119cfbae05843d386f48f6d9c7568f21b6f980550c51"
+  },
+  {
+    "file": "public/icon.png",
+    "sha256": "bd40f8f02cd58041103188c501f8cfa3823e2652a49537c27b78c36e74d53167"
+  },
+  {
+    "file": "public/manifest.json",
+    "sha256": "b6a3fefcea4723dfb050769b9811ba861966d56aa39f957ec2988e383ab519cd"
+  },
+  {
+    "file": "public/readit/brand/bookshelf.webp",
+    "sha256": "de90bc864a477d3474eabbf12a55df480eebf9252bc20f1ba35091da9bfc84cc"
+  },
+  {
+    "file": "public/readit/brand/icon-192.png",
+    "sha256": "26220b812a27d07a6f799800ba7bde2e22512cbae2c523f02029b05b592d69e0"
+  },
+  {
+    "file": "public/readit/brand/icon-256.png",
+    "sha256": "4eb6d68f98420824195a85f8cefa070e7000d25533a3739dad890a58ff2f2ae4"
+  },
+  {
+    "file": "public/readit/help/activity-export.webp",
+    "sha256": "faa63fbb594c3f6194763c1edd7ab5685e92702fdde5516093e3dac53e522966"
+  },
+  {
+    "file": "public/readit/help/activity-policy.webp",
+    "sha256": "432774a4afaad073f373f26f5ff0912d7ebd4bc4f045a9cd71f7db855a34bb8e"
+  },
+  {
+    "file": "public/readit/help/backup-options.webp",
+    "sha256": "8c227b17d490fe60eea383ddd9d14e9b85b60a41c968c0d1465862c4d144a3ab"
+  },
+  {
+    "file": "public/readit/help/backup-restore.webp",
+    "sha256": "e80e11d89c8f4c4102a9af36d7879e6866b7f8764cc529eadbe1c135eb73e853"
+  },
+  {
+    "file": "public/readit/help/backup-selection.webp",
+    "sha256": "6bda92526d00038c2d42f1c76d1f2934b9003107ada5e893994b887eaafdce1a"
+  },
+  {
+    "file": "public/readit/help/bottom-toolbar-editor.webp",
+    "sha256": "428a57a8213867cda189e7bb8357a6efe6e1c7c81ae0ae8a84c1648554905403"
+  },
+  {
+    "file": "public/readit/help/custom-css.webp",
+    "sha256": "be1760371b9262e2759126f66119f38f297bab0710068eedb87293ade1465b63"
+  },
+  {
+    "file": "public/readit/help/dictionary-providers.webp",
+    "sha256": "dcaf3c9a929fee4b3c22b6622a2ac9ccd3fae9f189eb4c91e5c3a5892df7da3d"
+  },
+  {
+    "file": "public/readit/help/folder-remove-confirm.webp",
+    "sha256": "5a3a2c66290645ff7d02b15f8a5d184c04aaeb4db4bfa4bfe8ec107c3554137d"
+  },
+  {
+    "file": "public/readit/help/font-settings.webp",
+    "sha256": "a8cd17c0616dfd67d84d4a8a61d4ae6a73360ec3457cde70ae986ee1d0d506ed"
+  },
+  {
+    "file": "public/readit/help/import-menu.webp",
+    "sha256": "ba3ab477401d698d5e8d4c8ecebc411b0211a44c6f5614eb8037690338fc9efa"
+  },
+  {
+    "file": "public/readit/help/internal-lookup.webp",
+    "sha256": "0f8a9c53b8755d9ba27d292954f50a88cb6108ff07324d5089dff81d41c6fa0b"
+  },
+  {
+    "file": "public/readit/help/legacy-records.webp",
+    "sha256": "2dcee2de9dc391901167042e071ae16ab0bc2399f0f3af0f9ebccd383547eb5c"
+  },
+  {
+    "file": "public/readit/help/library-sort.webp",
+    "sha256": "f7839b509ae32e4f14d60726b414aa7408776203355352d23de48165841e6d64"
+  },
+  {
+    "file": "public/readit/help/library-status.webp",
+    "sha256": "4c677722c59c9545c235e23887ebeccd2059c9d2121172f7717732b4d848d149"
+  },
+  {
+    "file": "public/readit/help/manual-sort-finished.webp",
+    "sha256": "224f646b4e5df3e36a8845773635b90f5e949e5b5e0872d6b3b09beae02dd27a"
+  },
+  {
+    "file": "public/readit/help/manual-sort-option.webp",
+    "sha256": "7ddff4bc0558bd4f1808a6d7f47b63130d5f09f059a725af8692b16c1bd2e9ef"
+  },
+  {
+    "file": "public/readit/help/motion-controls.webp",
+    "sha256": "8f44a14026f0f834a225ef4499d1a991db7c0e65ac9ddc40f194163bf406bef6"
+  },
+  {
+    "file": "public/readit/help/multi-book-stack.webp",
+    "sha256": "b11e2c320dca7b2553d3c0b3cd91a36c06fe6edf649b4a49fa3ef5b6a6598b26"
+  },
+  {
+    "file": "public/readit/help/notebook-body.webp",
+    "sha256": "0a386728dbdd8d3bacc11941cae07d7380cadc7854b5799ca2d4a0019030820e"
+  },
+  {
+    "file": "public/readit/help/page-sounds.webp",
+    "sha256": "6cdda839803ba8f50033abf250f5d7356bfbb4e91a50ed4e04cbb3f062d2502a"
+  },
+  {
+    "file": "public/readit/help/pdf-original.webp",
+    "sha256": "81388f134bfb50c1631112653231953ae808ff871d6b096d14d40ac1e692fdc3"
+  },
+  {
+    "file": "public/readit/help/pdf-text-mode.webp",
+    "sha256": "534cd7f96bc04de55b6a87dafffab728ac9430d998dc2fde617e2a8373ebc2ac"
+  },
+  {
+    "file": "public/readit/help/reader-turn-held.webp",
+    "sha256": "3868a4981b3a654e10d1dcccc9054f5c275634c38d38aca63df5fecdcf5bbd7a"
+  },
+  {
+    "file": "public/readit/help/selection-toolbar-editor.webp",
+    "sha256": "4367c2a783b2e3e2ec21461c81a1734678635f375c786770ac2d32211be4aca4"
+  },
+  {
+    "file": "public/readit/help/selection-tools.webp",
+    "sha256": "041c2c2df5f103118fe640a10f5686059f5656956797e66d845ed0a824fd8230"
+  },
+  {
+    "file": "public/readit/help/settings-apply-menu.webp",
+    "sha256": "b1ff7e7080121649817248cbd4a3ababb34e52f5014bc2d43ee924ce4d5ec3ae"
+  },
+  {
+    "file": "public/readit/help/settings-dictionary.webp",
+    "sha256": "31f71e5137c2c166f1e5118f4ce4bbf95c72ffa41fdb95355367ec681950242d"
+  },
+  {
+    "file": "public/readit/help/touch-zones.webp",
+    "sha256": "b27bf2edc4bb92fb1ff6ba2a5576e23b3a742a53e8dd488dcfb35cdfa4d33da3"
+  },
+  {
+    "file": "public/readit/help/translation-languages.webp",
+    "sha256": "89fb299d63886d69d19450df43c03d717c6e476799468a1962f520172864095a"
+  },
+  {
+    "file": "public/readit/help/tts-settings.webp",
+    "sha256": "db8ecf3661f5d12a72fd7860c71fa29ce22f17cb187d4b466a6ec1d7f09aa68f"
+  },
+  {
+    "file": "public/readit/help/turn-sensitivity.webp",
+    "sha256": "648d8992ad2f71387aef7923519189eb0ab4be88bfe8f6849c9a0a3c0172cc8b"
+  },
+  {
+    "file": "public/readit/help/watched-folders.webp",
+    "sha256": "5b579b57750ca535a8e4945d9bd1c97ee3cac0bf670b2d43ba75f657100f45b4"
+  },
+  {
+    "file": "public/readit/help/webdav-form.webp",
+    "sha256": "32eb2b319f81ad5fe7da6067c82acaf644174ba8d4f5cc19704aeba7ae662b60"
+  },
+  {
+    "file": "public/readit/help/wordbook-records.webp",
+    "sha256": "f6f3d7967686e2e8fccfb94e236d13212c27502b2d90054a0b98828d36d647af"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/drawable/ic_launcher_background.xml",
+    "sha256": "72449649c2bb5cb6ab2bca25c9492a1a49e3c33e6526dff263c9e04c2612f831"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+    "sha256": "13d0e32675381146c0c7bdb6a58176940d627c50e14d73950991089a1a573314"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml",
+    "sha256": "13d0e32675381146c0c7bdb6a58176940d627c50e14d73950991089a1a573314"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+    "sha256": "d153616a953a914e06822b98e9a88a7d034d125aa62c9b04f195f4c232276411"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png",
+    "sha256": "f7c2c2b50e127bdf69510de4c7154d767065744e92b57098f80c129335347c7c"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-hdpi/ic_launcher_monochrome.png",
+    "sha256": "56b9fca3bc1545d113d3bf52ae5db3852c804b5d99b2aa597bc86719821222c7"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+    "sha256": "d153616a953a914e06822b98e9a88a7d034d125aa62c9b04f195f4c232276411"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+    "sha256": "084e36ed8ec70cf420a47af4717f9c44a032a3d4e8da7951574868da665c48df"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png",
+    "sha256": "1603e42a0cd3b8c53afd5d0957914cc90282e82c617e054c9391c12a19f720ca"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-mdpi/ic_launcher_monochrome.png",
+    "sha256": "4592778b331ebafb8497a7ba959346384dd025b65f4a36640bd9cdd14dc69f19"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+    "sha256": "084e36ed8ec70cf420a47af4717f9c44a032a3d4e8da7951574868da665c48df"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+    "sha256": "d4b5d6ae2ddc27aa87879e4991cfdcd1cc5f93492aa5369dbe13832f3b9c30c0"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png",
+    "sha256": "9344d7b023f0d8326b3018b2bf1c6d05f23deb894080c859cf4b11c04a1d589d"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xhdpi/ic_launcher_monochrome.png",
+    "sha256": "1d4553dd84e4206a96312962b5e2c9d26e82d1ec4ebfce2e22b2322e2c7cb68d"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+    "sha256": "d4b5d6ae2ddc27aa87879e4991cfdcd1cc5f93492aa5369dbe13832f3b9c30c0"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+    "sha256": "516fd176864ab8386be9785f4320b2e76a471f3421dbd6192802718a164d10a4"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png",
+    "sha256": "1f07bc0baf7c8f78760c15427ebddd3abc34737bd5bcb6c514ccd9f9996d2b93"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_monochrome.png",
+    "sha256": "665f7c998a37048e94c3accc475e5c0a1d303997b9a538494c33efe2a30949b9"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+    "sha256": "516fd176864ab8386be9785f4320b2e76a471f3421dbd6192802718a164d10a4"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+    "sha256": "2733219b2fb9cecd5c2685789aa00041668407a9aeffec3cae505329a0064703"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png",
+    "sha256": "d74cdb44c9987355709ab412419d34e3dcc0f1f810df740de64e86fa2b19f171"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_monochrome.png",
+    "sha256": "987e197e6ffb296e0cf61f6b2d4cd8a775b8251485b650196edab9e8bfa6f655"
+  },
+  {
+    "file": "src-tauri/gen/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
+    "sha256": "2733219b2fb9cecd5c2685789aa00041668407a9aeffec3cae505329a0064703"
+  },
+  {
+    "file": "src-tauri/icons/128x128.png",
+    "sha256": "22329b07f20aa2a506ba8439d05fd2f52035ffdf2f9bd7db6b6f80cf691569bc"
+  },
+  {
+    "file": "src-tauri/icons/128x128@2x.png",
+    "sha256": "9fee904cb9c68c6d3531c570f322a119da36afdaf70dc7487abbb0a4700c645f"
+  },
+  {
+    "file": "src-tauri/icons/32x32.png",
+    "sha256": "e948ab23084acde323699383cb89755f64edc99df1f2e6294ee4c0804a981474"
+  },
+  {
+    "file": "src-tauri/icons/icon.png",
+    "sha256": "bd40f8f02cd58041103188c501f8cfa3823e2652a49537c27b78c36e74d53167"
+  }
+]
